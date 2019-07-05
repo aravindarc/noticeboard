@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>W3.CSS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<style>
+#imgBanner {
+    
+    display:block;
+    margin: auto;}
+.w3-center {
+    position: fixed !important;
+    position: absolute;
+    left: 25px;
+    right: 25px;
+    top: 0;
+    bottom: 0;
+}
+</style>
+<body>
+
+
+
+<div class="w3-center" >
+  <img id="imgBanner" src="" style="height:100%">
+  
+</div>
+
+<script>
+    var count;
+    var timeDelay;
+    var picArray = new Array();
+   
+    var curPic = -1;
+    var reloadTrigger = 0;
+
+    //function for slideshow
+    function carousel() {
+        for(i=0; i < count; i++) {
+            picArray[i] = new Image();
+            picArray[i].src = '/uploads/' + i + '.jpg';
+        }
+        console.log(curPic);
+        curPic = (++curPic > count-1)? 0 : curPic;
+        console.log(curPic);
+        reloadTrigger++;
+        try {
+        imgCont.src = picArray[curPic].src;
+        if(reloadTrigger > count) {
+            setTimeout(window.location.href = window.location.href, 5000);
+        }
+        }
+        catch(error) {
+            check()
+            console.log(error);
+        }
+        //timeDelay will be got in seconds multiply by 1000
+        //to convert into milliseconds
+        setTimeout(carousel, 5000);    
+    }
+
+    window.onload=function() {
+        
+        imgCont = document.getElementById('imgBanner');
+        
+        console.log(count);
+        check();
+        
+    }
+
+    function check() {
+        $.ajax({
+            url: window.location.href + "upload/check",
+            type: 'POST',
+            success: function(response) {
+                console.log(response);
+                var obj = JSON.parse(response);
+                console.log(count);
+                count = obj.count;
+                timeDelay = obj.delay;
+                console.log(count);
+                //start slideshow after getting count
+                if(reloadTrigger == 0)
+                    carousel();
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    }
+</script>
+
+<script src="/static/vendor/jquery/jquery-3.2.1.min.js"></script>
+<script src="/static/js/main.js"></script>
+</body>
+</html>
